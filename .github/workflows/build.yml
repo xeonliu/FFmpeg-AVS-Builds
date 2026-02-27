@@ -271,7 +271,7 @@ jobs:
       - name: Build ffmpeg
         env:
           FFMPEG_REPO_OVERRIDE: https://github.com/xeonliu/FFmpeg-AVSPlus-AVS2-AVS3.git
-          GIT_BRANCH_OVERRIDE: release/8.0.1-avsplus
+          GIT_BRANCH_OVERRIDE: master-avs-plus
         run: |
           T="$(echo -n ${{ github.token }} | sha256sum | head -c 64)" && echo -e "::add-mask::${T}\n::stop-commands::${T}"
           ./build.sh ${{ matrix.target }} ${{ matrix.variant }}

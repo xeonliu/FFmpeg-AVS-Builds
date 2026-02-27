@@ -35,17 +35,6 @@ cat <<EOF >"$BUILD_SCRIPT"
     git clone --filter=blob:none --branch='$GIT_BRANCH' '$FFMPEG_REPO' ffmpeg
     cd ffmpeg
 
-    FF_CONFIGURE="${FF_CONFIGURE//--enable-libsvtav1/}"
-    FF_CONFIGURE="${FF_CONFIGURE//--disable-libsvtav1/}"
-    FF_CONFIGURE="${FF_CONFIGURE//--enable-liboapv/}"
-    FF_CONFIGURE="${FF_CONFIGURE//--disable-liboapv/}"
-    FF_CONFIGURE="${FF_CONFIGURE//--enable-whisper/}"
-    FF_CONFIGURE="${FF_CONFIGURE//--disable-whisper/}"
-    FF_CONFIGURE="${FF_CONFIGURE//--enable-liblcevc-dec/}"
-    FF_CONFIGURE="${FF_CONFIGURE//--disable-liblcevc-dec/}"
-    FF_CONFIGURE="${FF_CONFIGURE//--enable-libvvenc/}"
-    FF_CONFIGURE="${FF_CONFIGURE//--disable-libvvenc/}"
-
     ./configure --prefix=/ffbuild/prefix --pkg-config-flags="--static" \$FFBUILD_TARGET_FLAGS \$FF_CONFIGURE \
         --extra-cflags="\$FF_CFLAGS" --extra-cxxflags="\$FF_CXXFLAGS" --extra-libs="\$FF_LIBS" \
         --extra-ldflags="\$FF_LDFLAGS" --extra-ldexeflags="\$FF_LDEXEFLAGS" \
