@@ -191,6 +191,12 @@ jobs:
       matrix:
         target: [win64,linux64]
         variant: [gpl,gpl-shared]
+        ffmpeg_branch: [release/8.0.1-avsplus, release/7.1.3-avsplus-avs2-avs3]
+        include:
+          - ffmpeg_branch: release/7.1.3-avsplus-avs2-avs3
+            ffmpeg_addin: "7.1"
+          - ffmpeg_branch: release/8.0.1-avsplus
+            ffmpeg_addin: ""
     steps:
       - name: Free Disk-Space
         run: df -h && sudo apt-get clean && docker system prune -a -f && sudo rm -rf /opt/ghc /usr/local/.ghcup /usr/local/lib/android && df -h
@@ -209,7 +215,8 @@ jobs:
       - name: Image Name
         id: imagename
         run: |
-          IMG="${GITHUB_REPOSITORY,,}/${{ matrix.target }}-${{ matrix.variant }}"
+          ADDIN="${{ matrix.ffmpeg_addin }}"
+          IMG="${GITHUB_REPOSITORY,,}/${{ matrix.target }}-${{ matrix.variant }}${ADDIN:+-$ADDIN}"
           IMG="${IMG/ /-}"
           echo "name=ghcr.io/${IMG}" >> $GITHUB_OUTPUT
           echo "rawname=${IMG#*/}" >> $GITHUB_OUTPUT
@@ -220,7 +227,9 @@ jobs:
       - name: Stop Commands
         run: T="$(echo -n ${{ github.token }} | sha256sum | head -c 64)" && echo -e "::add-mask::${T}\n::stop-commands::${T}"
       - name: Generate Dockerfile
-        run: ./generate.sh ${{ matrix.target }} ${{ matrix.variant }}
+        run: |
+          ADDIN="${{ matrix.ffmpeg_addin }}"
+          ./generate.sh ${{ matrix.target }} ${{ matrix.variant }} ${ADDIN:+$ADDIN}
       - name: Cache
         uses: actions/cache/restore@v4
         with:
@@ -258,6 +267,11 @@ jobs:
         target: [win64,linux64]
         variant: [gpl,gpl-shared]
         ffmpeg_branch: [release/8.0.1-avsplus, release/7.1.3-avsplus-avs2-avs3]
+        include:
+          - ffmpeg_branch: release/7.1.3-avsplus-avs2-avs3
+            ffmpeg_addin: "7.1"
+          - ffmpeg_branch: release/8.0.1-avsplus
+            ffmpeg_addin: ""
     steps:
       - name: Free Disk-Space
         run: df -h && sudo apt-get clean && docker system prune -a -f && sudo rm -rf /opt/ghc /usr/local/.ghcup /usr/local/lib/android && df -h
@@ -275,7 +289,8 @@ jobs:
           GIT_BRANCH_OVERRIDE: ${{ matrix.ffmpeg_branch }}
         run: |
           T="$(echo -n ${{ github.token }} | sha256sum | head -c 64)" && echo -e "::add-mask::${T}\n::stop-commands::${T}"
-          ./build.sh ${{ matrix.target }} ${{ matrix.variant }}
+          ADDIN="${{ matrix.ffmpeg_addin }}"
+          ./build.sh ${{ matrix.target }} ${{ matrix.variant }} ${ADDIN:+$ADDIN}
       - name: Replace spaces in string
         id: strs
         run: |
